@@ -1,0 +1,171 @@
+{
+  "app": {
+    "name": "AI 音乐陪练",
+    "loading": "加载中..."
+  },
+  "nav": {
+    "dashboard": "首页",
+    "library": "曲库",
+    "practice": "练习",
+    "tuner": "调音器",
+    "profile": "个人中心"
+  },
+  "instrument": {
+    "piano": "钢琴",
+    "cello": "大提琴"
+  },
+  "difficulty": {
+    "beginner": "初级",
+    "intermediate": "中级",
+    "advanced": "高级"
+  },
+  "practice": {
+    "start": "开始录制",
+    "pause": "暂停",
+    "stop": "停止",
+    "resume": "继续",
+    "countdown": "准备...",
+    "mode_piece": "整曲模式",
+    "mode_single": "单音模式",
+    "metronome": "节拍器",
+    "accompaniment": "伴奏",
+    "upload_audio": "上传音频",
+    "select_track": "请从曲库选择一首曲目",
+    "settings": "练习设置",
+    "scoring_mode": "评分模式",
+    "speed": "速度",
+    "bpm": "BPM",
+    "recording": "录制中",
+    "elapsed": "已用时",
+    "stop_confirm_title": "停止录制",
+    "stop_submit": "提交评测",
+    "stop_save": "保存稍后继续",
+    "stop_restart": "重新录制",
+    "stop_discard": "放弃",
+    "audio_upload_title": "上传音频文件",
+    "audio_upload_hint": "WAV, MP3, M4A, FLAC",
+    "sound_effects": "音效反馈",
+    "video_record": "录制视频"
+  },
+  "scoring": {
+    "speed": "速度",
+    "rhythm": "节奏",
+    "intonation": "音准",
+    "smoothness": "流畅度",
+    "completeness": "完整度",
+    "total": "总分"
+  },
+  "report": {
+    "title": "演奏报告",
+    "problem": "问题定位",
+    "cause": "原因分析",
+    "solution": "解决方案",
+    "share": "分享",
+    "replay": "回放",
+    "no_data": "未找到报告数据",
+    "errors_title": "错误详情",
+    "measure": "小节",
+    "expected": "期望",
+    "actual": "实际",
+    "severity_minor": "轻微",
+    "severity_moderate": "中等",
+    "severity_severe": "严重",
+    "best_score": "最佳成绩",
+    "current": "本次",
+    "best": "最佳",
+    "left_hand": "左手",
+    "right_hand": "右手",
+    "both_hands": "双手",
+    "play_demo": "播放示范",
+    "diagnostics": "诊断分析",
+    "share_link": "复制链接",
+    "link_copied": "链接已复制！",
+    "suggestions": "练习建议"
+  },
+  "profile": {
+    "title": "个人中心",
+    "nickname": "昵称",
+    "skill_level": "学习水平",
+    "language": "语言",
+    "export_data": "导出数据",
+    "import_data": "导入数据",
+    "instrument_pref": "默认乐器",
+    "sound_effects": "音效反馈",
+    "total_practice_time": "累计练习时长",
+    "tracks_practiced": "练习曲目数",
+    "growth_chart": "能力成长图谱",
+    "practice_history": "练习历史"
+  },
+  "dashboard": {
+    "welcome": "欢迎回来",
+    "total_practice": "总练习时长",
+    "total_sessions": "练习次数",
+    "avg_score": "平均分",
+    "hours": "时",
+    "minutes": "分",
+    "recent_sessions": "最近练习",
+    "no_sessions": "还没有练习记录，开始练习吧！",
+    "score_trend": "评分趋势",
+    "practice_trend": "练习时长",
+    "go_practice": "开始练习",
+    "weekly_goal": "每周目标",
+    "practice_days": "练习天数",
+    "practice_time": "练习时长",
+    "days": "天",
+    "goal_achieved": "本周目标已达成！",
+    "incomplete": "未完成的练习",
+    "continue": "继续"
+  },
+  "library": {
+    "title": "曲库",
+    "search_placeholder": "搜索曲名或作曲家...",
+    "all_levels": "全部难度",
+    "no_tracks": "未找到曲目",
+    "upload": "上传乐谱",
+    "upload_hint": "选择 MusicXML 文件 (.xml, .musicxml)",
+    "measures": "小节",
+    "builtin": "内置",
+    "custom": "自定义"
+  },
+  "section": {
+    "title": "片段练习",
+    "measures": "小节",
+    "pass_threshold": "达标线",
+    "passed": "片段已达标！",
+    "not_passed": "继续练习这个片段",
+    "back_to_report": "返回报告"
+  },
+  "streak": {
+    "title": "练习打卡",
+    "current_streak": "当前连续",
+    "longest_streak": "最长连续",
+    "days": "天",
+    "today_done": "今日已打卡",
+    "today_pending": "今日未练习",
+    "this_month": "本月"
+  },
+  "achievement": {
+    "title": "成就",
+    "unlocked": "已解锁",
+    "locked": "未解锁"
+  },
+  "pwa": {
+    "install_hint": "安装此应用以获得最佳体验",
+    "install": "安装"
+  },
+  "tuner": {
+    "title": "调音器",
+    "start": "开始调音",
+    "stop": "停止",
+    "in_tune": "已调准",
+    "sharp": "偏高",
+    "flat": "偏低",
+    "reference": "基准音高",
+    "string_c": "C 弦",
+    "string_g": "G 弦",
+    "string_d": "D 弦",
+    "string_a": "A 弦",
+    "cents": "音分",
+    "detected": "检测到"
+  }
+}

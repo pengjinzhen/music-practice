@@ -1,0 +1,171 @@
+{
+  "app": {
+    "name": "AI Music Practice",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "library": "Library",
+    "practice": "Practice",
+    "tuner": "Tuner",
+    "profile": "Profile"
+  },
+  "instrument": {
+    "piano": "Piano",
+    "cello": "Cello"
+  },
+  "difficulty": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "practice": {
+    "start": "Start Recording",
+    "pause": "Pause",
+    "stop": "Stop",
+    "resume": "Resume",
+    "countdown": "Get Ready...",
+    "mode_piece": "Musical Piece",
+    "mode_single": "Single Note",
+    "metronome": "Metronome",
+    "accompaniment": "Accompaniment",
+    "upload_audio": "Upload Audio",
+    "select_track": "Select a track from the library",
+    "settings": "Practice Settings",
+    "scoring_mode": "Scoring Mode",
+    "speed": "Speed",
+    "bpm": "BPM",
+    "recording": "Recording",
+    "elapsed": "Elapsed",
+    "stop_confirm_title": "Stop Recording",
+    "stop_submit": "Submit for Scoring",
+    "stop_save": "Save & Continue Later",
+    "stop_restart": "Restart",
+    "stop_discard": "Discard",
+    "audio_upload_title": "Upload Audio File",
+    "audio_upload_hint": "WAV, MP3, M4A, FLAC",
+    "sound_effects": "Sound Effects",
+    "video_record": "Record Video"
+  },
+  "scoring": {
+    "speed": "Speed",
+    "rhythm": "Rhythm",
+    "intonation": "Intonation",
+    "smoothness": "Smoothness",
+    "completeness": "Completeness",
+    "total": "Total Score"
+  },
+  "report": {
+    "title": "Performance Report",
+    "problem": "Problem",
+    "cause": "Cause Analysis",
+    "solution": "Solution",
+    "share": "Share",
+    "replay": "Replay",
+    "no_data": "No report data found",
+    "errors_title": "Error Details",
+    "measure": "Measure",
+    "expected": "Expected",
+    "actual": "Actual",
+    "severity_minor": "Minor",
+    "severity_moderate": "Moderate",
+    "severity_severe": "Severe",
+    "best_score": "Best Score",
+    "current": "Current",
+    "best": "Best",
+    "left_hand": "Left Hand",
+    "right_hand": "Right Hand",
+    "both_hands": "Both Hands",
+    "play_demo": "Play Demo",
+    "diagnostics": "Diagnostics",
+    "share_link": "Copy Link",
+    "link_copied": "Link Copied!",
+    "suggestions": "Practice Suggestions"
+  },
+  "profile": {
+    "title": "Profile",
+    "nickname": "Nickname",
+    "skill_level": "Skill Level",
+    "language": "Language",
+    "export_data": "Export Data",
+    "import_data": "Import Data",
+    "instrument_pref": "Default Instrument",
+    "sound_effects": "Sound Effects",
+    "total_practice_time": "Total Practice Time",
+    "tracks_practiced": "Tracks Practiced",
+    "growth_chart": "Growth Chart",
+    "practice_history": "Practice History"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "total_practice": "Total Practice",
+    "total_sessions": "Sessions",
+    "avg_score": "Avg Score",
+    "hours": "h",
+    "minutes": "min",
+    "recent_sessions": "Recent Sessions",
+    "no_sessions": "No practice sessions yet. Start practicing!",
+    "score_trend": "Score Trend",
+    "practice_trend": "Practice Duration",
+    "go_practice": "Start Practice",
+    "weekly_goal": "Weekly Goal",
+    "practice_days": "Practice Days",
+    "practice_time": "Practice Time",
+    "days": "days",
+    "goal_achieved": "Goal achieved this week!",
+    "incomplete": "Unfinished Practice",
+    "continue": "Continue"
+  },
+  "library": {
+    "title": "Library",
+    "search_placeholder": "Search by title or composer...",
+    "all_levels": "All Levels",
+    "no_tracks": "No tracks found",
+    "upload": "Upload Score",
+    "upload_hint": "Select a MusicXML file (.xml, .musicxml)",
+    "measures": "measures",
+    "builtin": "Built-in",
+    "custom": "Custom"
+  },
+  "section": {
+    "title": "Section Practice",
+    "measures": "Measures",
+    "pass_threshold": "Pass Threshold",
+    "passed": "Section Passed!",
+    "not_passed": "Keep practicing this section",
+    "back_to_report": "Back to Report"
+  },
+  "streak": {
+    "title": "Practice Streak",
+    "current_streak": "Current Streak",
+    "longest_streak": "Longest Streak",
+    "days": "days",
+    "today_done": "Practiced today",
+    "today_pending": "Not practiced yet",
+    "this_month": "This Month"
+  },
+  "achievement": {
+    "title": "Achievements",
+    "unlocked": "Unlocked",
+    "locked": "Locked"
+  },
+  "pwa": {
+    "install_hint": "Install this app for the best experience",
+    "install": "Install"
+  },
+  "tuner": {
+    "title": "Tuner",
+    "start": "Start Tuner",
+    "stop": "Stop",
+    "in_tune": "In Tune",
+    "sharp": "Sharp",
+    "flat": "Flat",
+    "reference": "Reference Pitch",
+    "string_c": "C String",
+    "string_g": "G String",
+    "string_d": "D String",
+    "string_a": "A String",
+    "cents": "cents",
+    "detected": "Detected"
+  }
+}
