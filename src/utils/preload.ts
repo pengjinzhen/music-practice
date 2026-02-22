@@ -3,13 +3,14 @@
  * Loads critical modules first, then defers non-critical ones.
  */
 export function initPreloadStrategy() {
+  const base = import.meta.env.BASE_URL || '/'
   // Phase 1: Critical - sql.js WASM (needed for any data access)
-  preloadWasm('/sql-wasm.wasm', 'sql-wasm')
+  preloadWasm(`${base}sql-wasm.wasm`, 'sql-wasm')
 
   // Phase 2: Deferred - Audio/ML models (loaded when entering practice)
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => {
-      preloadWasm('/essentia-wasm.wasm', 'essentia')
+      preloadWasm(`${base}essentia-wasm.wasm`, 'essentia')
     })
   }
 }

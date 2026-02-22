@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react'
-import { BrowserRouter, useRoutes } from 'react-router-dom'
+import { HashRouter, useRoutes } from 'react-router-dom'
 import { routes } from './routes'
 import { initPreloadStrategy } from '@/utils/preload'
 import { getDatabase } from '@/db/database'
@@ -29,8 +29,8 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppRoutes />
-    </BrowserRouter>
+    </HashRouter>
   )
 }

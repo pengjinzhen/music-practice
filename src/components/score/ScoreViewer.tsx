@@ -11,13 +11,20 @@ export interface ScoreViewerProps {
 
 async function resolveXml(input: string): Promise<string> {
   if (!input) return ''
+  const str = String(input)
   // Already XML content
-  if (input.trimStart().startsWith('<') || input.trimStart().startsWith('<?xml')) return input
-  // Relative path — resolve to /scores/ prefix
-  const url = input.startsWith('http') ? input : `/scores/${input}`
+  if (str.trimStart().startsWith('<') || str.trimStart().startsWith('<?xml')) return str
+  // Relative path — resolve to base + scores/ prefix
+  const base = import.meta.env.BASE_URL || '/'
+  const url = str.startsWith('http') ? str : `${base}scores/${str}`
   const res = await fetch(url)
-  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`)
-  return res.text()
+  if (!res.ok) throw new Error(`Score file not found: ${str}`)
+  const text = await res.text()
+  // Validate it's actually XML, not an HTML fallback page
+  if (!text.trimStart().startsWith('<') || text.includes('<!DOCTYPE html>')) {
+    throw new Error(`Score file not found: ${str}`)
+  }
+  return text
 }
 
 export function ScoreViewer({ musicXml, zoom = 1.0, onReady, className }: ScoreViewerProps) {
