@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
   instrument TEXT DEFAULT 'piano' CHECK(instrument IN ('piano','cello')),
   language TEXT DEFAULT 'en' CHECK(language IN ('en','zh')),
   sound_effects_enabled INTEGER DEFAULT 0,
-  created_at TEXT DEFAULT (datetime('now')),
-  updated_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT,
+  updated_at TEXT
 );
 
 -- Tracks table
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS tracks (
   musicxml_path TEXT,
   midi_path TEXT,
   is_builtin INTEGER DEFAULT 1,
-  created_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT
 );
 
 -- Practice sessions table
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS practice_sessions (
   audio_blob_key TEXT,
   video_blob_key TEXT,
   resume_position INTEGER,
-  created_at TEXT DEFAULT (datetime('now')),
+  created_at TEXT,
   FOREIGN KEY (track_id) REFERENCES tracks(id)
 );
 
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS achievements (
   achievement_type TEXT NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
-  unlocked_at TEXT DEFAULT (datetime('now'))
+  unlocked_at TEXT
 );
 
 -- Weekly goals table
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS weekly_goals (
   target_minutes INTEGER DEFAULT 120,
   actual_days INTEGER DEFAULT 0,
   actual_minutes INTEGER DEFAULT 0,
-  created_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT
 );
 
 -- Indexes

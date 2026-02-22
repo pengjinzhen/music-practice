@@ -1,4 +1,4 @@
-import { getDB } from '../database'
+import { query, execute } from '../database'
 
 export interface PracticeSessionRecord {
   id: string
@@ -41,8 +41,7 @@ function rowToObject<T>(columns: string[], values: unknown[]): T {
 
 export const PracticeRepository = {
   create(session: Omit<PracticeSessionRecord, 'created_at'>): void {
-    const db = getDB()
-    db.run(
+    execute(
       `INSERT INTO practice_sessions (id, user_id, track_id, scoring_mode, status, duration_seconds, target_bpm, actual_bpm, total_score, speed_score, rhythm_score, intonation_score, smoothness_score, completeness_score, audio_blob_key, video_blob_key, resume_position)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [session.id, session.user_id, session.track_id, session.scoring_mode, session.status, session.duration_seconds, session.target_bpm, session.actual_bpm, session.total_score, session.speed_score, session.rhythm_score, session.intonation_score, session.smoothness_score, session.completeness_score, session.audio_blob_key, session.video_blob_key, session.resume_position],
@@ -50,138 +49,120 @@ export const PracticeRepository = {
   },
 
   getRecent(limit = 10): PracticeSessionRecord[] {
-    const db = getDB()
-    const result = db.exec(
+    const result = query(
       `SELECT * FROM practice_sessions ORDER BY created_at DESC LIMIT ?`,
       [limit],
     )
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<PracticeSessionRecord>(result[0].columns, v))
+    if (!result) return []
+    return result.values.map((v) => rowToObject<PracticeSessionRecord>(result.columns, v))
   },
 
   getById(id: string): PracticeSessionRecord | null {
-    const db = getDB()
-    const result = db.exec('SELECT * FROM practice_sessions WHERE id = ?', [id])
-    if (!result.length || !result[0].values.length) return null
-    return rowToObject<PracticeSessionRecord>(result[0].columns, result[0].values[0])
+    const result = query('SELECT * FROM practice_sessions WHERE id = ?', [id])
+    if (!result || !result.values.length) return null
+    return rowToObject<PracticeSessionRecord>(result.columns, result.values[0])
   },
 
   getErrorsBySession(sessionId: string): PracticeErrorRecord[] {
-    const db = getDB()
-    const result = db.exec('SELECT * FROM practice_errors WHERE session_id = ?', [sessionId])
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<PracticeErrorRecord>(result[0].columns, v))
+    const result = query('SELECT * FROM practice_errors WHERE session_id = ?', [sessionId])
+    if (!result) return []
+    return result.values.map((v) => rowToObject<PracticeErrorRecord>(result.columns, v))
   },
 
   addError(error: Omit<PracticeErrorRecord, 'id'>): void {
-    const db = getDB()
-    db.run(
+    execute(
       `INSERT INTO practice_errors (session_id, measure_number, beat_position, error_type, expected_note, actual_note, deviation_cents, deviation_ms, severity, hand)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [error.session_id, error.measure_number, error.beat_position, error.error_type, error.expected_note, error.actual_note, error.deviation_cents, error.deviation_ms, error.severity, error.hand],
     )
   },
 
-  /** Get total practice duration in seconds */
   getTotalDuration(): number {
-    const db = getDB()
-    const result = db.exec("SELECT COALESCE(SUM(duration_seconds),0) as total FROM practice_sessions WHERE status='completed'")
-    if (!result.length) return 0
-    return Number(result[0].values[0][0])
+    const result = query("SELECT COALESCE(SUM(duration_seconds),0) as total FROM practice_sessions WHERE status='completed'")
+    if (!result) return 0
+    return Number(result.values[0][0])
   },
 
-  /** Get total completed sessions count */
   getTotalSessions(): number {
-    const db = getDB()
-    const result = db.exec("SELECT COUNT(*) FROM practice_sessions WHERE status='completed'")
-    if (!result.length) return 0
-    return Number(result[0].values[0][0])
+    const result = query("SELECT COUNT(*) FROM practice_sessions WHERE status='completed'")
+    if (!result) return 0
+    return Number(result.values[0][0])
   },
 
-  /** Get average total score */
   getAverageScore(): number {
-    const db = getDB()
-    const result = db.exec("SELECT COALESCE(AVG(total_score),0) FROM practice_sessions WHERE status='completed' AND total_score IS NOT NULL")
-    if (!result.length) return 0
-    return Number(result[0].values[0][0])
+    const result = query("SELECT COALESCE(AVG(total_score),0) FROM practice_sessions WHERE status='completed' AND total_score IS NOT NULL")
+    if (!result) return 0
+    return Number(result.values[0][0])
   },
 
-  /** Get practice duration per day for last N days */
   getDailyDurations(days: number = 30): { date: string; minutes: number }[] {
-    const db = getDB()
-    const result = db.exec(
+    const daysStr = `-${days} days`
+    const result = query(
       `SELECT DATE(created_at) as d, COALESCE(SUM(duration_seconds),0)/60.0 as mins
-       FROM practice_sessions WHERE status='completed' AND created_at >= DATE('now','-${days} days')
+       FROM practice_sessions WHERE status='completed' AND created_at >= DATE('now', ?)
        GROUP BY DATE(created_at) ORDER BY d ASC`,
+      [daysStr],
     )
-    if (!result.length) return []
-    return result[0].values.map((v) => ({ date: String(v[0]), minutes: Number(v[1]) }))
+    if (!result) return []
+    return result.values.map((v) => ({ date: String(v[0]), minutes: Number(v[1]) }))
   },
 
-  /** Get average scores per day for last N days */
   getDailyScores(days: number = 30): { date: string; score: number }[] {
-    const db = getDB()
-    const result = db.exec(
+    const daysStr = `-${days} days`
+    const result = query(
       `SELECT DATE(created_at) as d, AVG(total_score) as avg_score
-       FROM practice_sessions WHERE status='completed' AND total_score IS NOT NULL AND created_at >= DATE('now','-${days} days')
+       FROM practice_sessions WHERE status='completed' AND total_score IS NOT NULL AND created_at >= DATE('now', ?)
        GROUP BY DATE(created_at) ORDER BY d ASC`,
+      [daysStr],
     )
-    if (!result.length) return []
-    return result[0].values.map((v) => ({ date: String(v[0]), score: Number(v[1]) }))
+    if (!result) return []
+    return result.values.map((v) => ({ date: String(v[0]), score: Number(v[1]) }))
   },
 
-  /** Get incomplete sessions (for resume) */
   getIncomplete(): PracticeSessionRecord[] {
-    const db = getDB()
-    const result = db.exec("SELECT * FROM practice_sessions WHERE status='in-progress' ORDER BY created_at DESC")
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<PracticeSessionRecord>(result[0].columns, v))
+    const result = query("SELECT * FROM practice_sessions WHERE status='in-progress' ORDER BY created_at DESC")
+    if (!result) return []
+    return result.values.map((v) => rowToObject<PracticeSessionRecord>(result.columns, v))
   },
 
   updateScores(id: string, scores: { total_score: number; speed_score: number; rhythm_score: number; intonation_score: number; smoothness_score: number; completeness_score: number }): void {
-    const db = getDB()
-    db.run(
+    execute(
       `UPDATE practice_sessions SET total_score=?, speed_score=?, rhythm_score=?, intonation_score=?, smoothness_score=?, completeness_score=?, status='completed' WHERE id=?`,
       [scores.total_score, scores.speed_score, scores.rhythm_score, scores.intonation_score, scores.smoothness_score, scores.completeness_score, id],
     )
   },
 
   getDiagnostics(sessionId: string): { dimension: string; problem: string; cause_analysis: string | null; solution: string | null; measure_start: number | null; measure_end: number | null; severity_rank: number | null }[] {
-    const db = getDB()
-    const result = db.exec('SELECT * FROM diagnostics WHERE session_id = ? ORDER BY severity_rank DESC', [sessionId])
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject(result[0].columns, v)) as never[]
+    const result = query('SELECT * FROM diagnostics WHERE session_id = ? ORDER BY severity_rank DESC', [sessionId])
+    if (!result) return []
+    return result.values.map((v) => rowToObject(result.columns, v)) as never[]
   },
 
-  /** Get best score for a track */
   getBestScore(trackId: string): number | null {
-    const db = getDB()
-    const result = db.exec(
+    const result = query(
       "SELECT MAX(total_score) FROM practice_sessions WHERE track_id=? AND status='completed' AND total_score IS NOT NULL",
       [trackId],
     )
-    if (!result.length || result[0].values[0][0] == null) return null
-    return Number(result[0].values[0][0])
+    if (!result || result.values[0][0] == null) return null
+    return Number(result.values[0][0])
   },
 
-  /** Get distinct track count */
   getDistinctTrackCount(): number {
-    const db = getDB()
-    const result = db.exec("SELECT COUNT(DISTINCT track_id) FROM practice_sessions WHERE status='completed'")
-    if (!result.length) return 0
-    return Number(result[0].values[0][0])
+    const result = query("SELECT COUNT(DISTINCT track_id) FROM practice_sessions WHERE status='completed'")
+    if (!result) return 0
+    return Number(result.values[0][0])
   },
 
-  /** Get dimension averages over time for growth chart */
   getDimensionHistory(days: number = 90): { date: string; speed: number; rhythm: number; intonation: number; smoothness: number; completeness: number }[] {
-    const db = getDB()
-    const result = db.exec(
+    const daysStr = `-${days} days`
+    const result = query(
       `SELECT DATE(created_at) as d, AVG(speed_score), AVG(rhythm_score), AVG(intonation_score), AVG(smoothness_score), AVG(completeness_score)
-       FROM practice_sessions WHERE status='completed' AND total_score IS NOT NULL AND created_at >= DATE('now','-${days} days')
+       FROM practice_sessions WHERE status='completed' AND total_score IS NOT NULL AND created_at >= DATE('now', ?)
        GROUP BY DATE(created_at) ORDER BY d ASC`,
+      [daysStr],
     )
-    if (!result.length) return []
-    return result[0].values.map((v) => ({
+    if (!result) return []
+    return result.values.map((v) => ({
       date: String(v[0]),
       speed: Number(v[1] ?? 0),
       rhythm: Number(v[2] ?? 0),
@@ -191,18 +172,14 @@ export const PracticeRepository = {
     }))
   },
 
-  /** Get all completed sessions for a specific track */
   getByTrack(trackId: string): PracticeSessionRecord[] {
-    const db = getDB()
-    const result = db.exec("SELECT * FROM practice_sessions WHERE track_id=? AND status='completed' ORDER BY created_at ASC", [trackId])
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<PracticeSessionRecord>(result[0].columns, v))
+    const result = query("SELECT * FROM practice_sessions WHERE track_id=? AND status='completed' ORDER BY created_at ASC", [trackId])
+    if (!result) return []
+    return result.values.map((v) => rowToObject<PracticeSessionRecord>(result.columns, v))
   },
 
-  /** Upsert a session (for import) */
   upsert(session: PracticeSessionRecord): void {
-    const db = getDB()
-    db.run(
+    execute(
       `INSERT OR REPLACE INTO practice_sessions (id, user_id, track_id, scoring_mode, status, duration_seconds, target_bpm, actual_bpm, total_score, speed_score, rhythm_score, intonation_score, smoothness_score, completeness_score, audio_blob_key, video_blob_key, resume_position, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [session.id, session.user_id, session.track_id, session.scoring_mode, session.status, session.duration_seconds, session.target_bpm, session.actual_bpm, session.total_score, session.speed_score, session.rhythm_score, session.intonation_score, session.smoothness_score, session.completeness_score, session.audio_blob_key, session.video_blob_key, session.resume_position, session.created_at],

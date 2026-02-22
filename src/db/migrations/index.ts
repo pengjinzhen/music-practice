@@ -3,10 +3,10 @@ import type { Database } from 'sql.js'
 const CURRENT_VERSION = 1
 
 export function runMigrations(db: Database): void {
-  // Create migrations tracking table
+  // Create migrations tracking table (no params, safe to use run)
   db.run(`CREATE TABLE IF NOT EXISTS schema_migrations (
     version INTEGER PRIMARY KEY,
-    applied_at TEXT DEFAULT (datetime('now'))
+    applied_at TEXT
   )`)
 
   const result = db.exec('SELECT COALESCE(MAX(version), 0) as v FROM schema_migrations')
@@ -16,7 +16,10 @@ export function runMigrations(db: Database): void {
     // Apply migrations sequentially
     for (let v = currentVersion + 1; v <= CURRENT_VERSION; v++) {
       applyMigration(db, v)
-      db.run('INSERT INTO schema_migrations (version) VALUES (?)', [v])
+      const stmt = db.prepare("INSERT INTO schema_migrations (version, applied_at) VALUES (?, datetime('now'))")
+      stmt.bind([v])
+      stmt.step()
+      stmt.free()
     }
   }
 }

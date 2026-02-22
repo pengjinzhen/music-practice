@@ -2,10 +2,22 @@ import { useEffect, useRef, useState } from 'react'
 import { OpenSheetMusicDisplay as OSMD } from 'opensheetmusicdisplay'
 
 export interface ScoreViewerProps {
+  /** MusicXML content string, full URL, or relative path like "piano/twinkle.xml" */
   musicXml: string
   zoom?: number
   onReady?: (osmd: OSMD) => void
   className?: string
+}
+
+async function resolveXml(input: string): Promise<string> {
+  if (!input) return ''
+  // Already XML content
+  if (input.trimStart().startsWith('<') || input.trimStart().startsWith('<?xml')) return input
+  // Relative path — resolve to /scores/ prefix
+  const url = input.startsWith('http') ? input : `/scores/${input}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`)
+  return res.text()
 }
 
 export function ScoreViewer({ musicXml, zoom = 1.0, onReady, className }: ScoreViewerProps) {
@@ -22,12 +34,14 @@ export function ScoreViewer({ musicXml, zoom = 1.0, onReady, className }: ScoreV
         setLoading(true)
         setError(null)
         if (osmdRef.current) osmdRef.current.clear()
+        const xmlContent = await resolveXml(musicXml)
+        if (cancelled) return
         const osmd = new OSMD(containerRef.current, {
           autoResize: true, drawTitle: true, drawComposer: true, drawingParameters: 'default',
         })
         osmd.zoom = zoom
         osmdRef.current = osmd
-        await osmd.load(musicXml)
+        await osmd.load(xmlContent)
         if (cancelled) return
         osmd.render()
         setLoading(false)

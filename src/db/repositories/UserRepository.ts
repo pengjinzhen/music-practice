@@ -1,4 +1,4 @@
-import { getDB } from '../database'
+import { query, execute } from '../database'
 
 export interface UserRecord {
   id: string
@@ -12,22 +12,18 @@ export interface UserRecord {
 
 export const UserRepository = {
   get(): UserRecord {
-    const db = getDB()
-    const result = db.exec("SELECT * FROM users WHERE id = 'local-user'")
-    if (!result.length || !result[0].values.length) {
+    const result = query("SELECT * FROM users WHERE id = 'local-user'")
+    if (!result || !result.values.length) {
       throw new Error('User not found')
     }
-    const cols = result[0].columns
-    const vals = result[0].values[0]
-    return Object.fromEntries(cols.map((c, i) => [c, vals[i]])) as unknown as UserRecord
+    return Object.fromEntries(result.columns.map((c, i) => [c, result.values[0][i]])) as unknown as UserRecord
   },
 
   update(fields: Partial<Omit<UserRecord, 'id'>>): void {
-    const db = getDB()
     const entries = Object.entries(fields)
     if (!entries.length) return
     const sets = entries.map(([k]) => `${k} = ?`).join(', ')
     const values = entries.map(([, v]) => v)
-    db.run(`UPDATE users SET ${sets}, updated_at = datetime('now') WHERE id = 'local-user'`, values)
+    execute(`UPDATE users SET ${sets}, updated_at = datetime('now') WHERE id = 'local-user'`, values)
   },
 }

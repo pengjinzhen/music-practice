@@ -13,6 +13,7 @@ declare module 'sql.js' {
     bind(params?: unknown[]): boolean
     step(): boolean
     getAsObject(params?: Record<string, unknown>): Record<string, unknown>
+    getColumnNames(): string[]
     get(params?: unknown[]): unknown[]
     free(): boolean
     reset(): void

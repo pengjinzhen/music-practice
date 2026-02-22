@@ -1,4 +1,4 @@
-import { getDB } from '../database'
+import { query, execute } from '../database'
 
 export interface AchievementRecord {
   id: string
@@ -25,32 +25,28 @@ function rowToObject<T>(columns: string[], values: unknown[]): T {
 
 export const AchievementRepository = {
   getAll(): AchievementRecord[] {
-    const db = getDB()
-    const result = db.exec("SELECT * FROM achievements WHERE user_id = 'local-user' ORDER BY unlocked_at DESC")
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<AchievementRecord>(result[0].columns, v))
+    const result = query("SELECT * FROM achievements WHERE user_id = 'local-user' ORDER BY unlocked_at DESC")
+    if (!result) return []
+    return result.values.map((v) => rowToObject<AchievementRecord>(result.columns, v))
   },
 
   unlock(achievement: Omit<AchievementRecord, 'unlocked_at'>): void {
-    const db = getDB()
-    db.run(
+    execute(
       'INSERT OR IGNORE INTO achievements (id, user_id, achievement_type, title, description) VALUES (?, ?, ?, ?, ?)',
       [achievement.id, achievement.user_id, achievement.achievement_type, achievement.title, achievement.description],
     )
   },
 
   getCurrentWeekGoal(): WeeklyGoalRecord | null {
-    const db = getDB()
-    const result = db.exec(
+    const result = query(
       "SELECT * FROM weekly_goals WHERE user_id = 'local-user' ORDER BY week_start DESC LIMIT 1",
     )
-    if (!result.length || !result[0].values.length) return null
-    return rowToObject<WeeklyGoalRecord>(result[0].columns, result[0].values[0])
+    if (!result || !result.values.length) return null
+    return rowToObject<WeeklyGoalRecord>(result.columns, result.values[0])
   },
 
   upsertWeeklyGoal(goal: Omit<WeeklyGoalRecord, 'id'>): void {
-    const db = getDB()
-    db.run(
+    execute(
       `INSERT INTO weekly_goals (user_id, week_start, target_days, target_minutes, actual_days, actual_minutes)
        VALUES (?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET target_days=?, target_minutes=?, actual_days=?, actual_minutes=?`,

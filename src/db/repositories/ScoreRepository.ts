@@ -1,4 +1,4 @@
-import { getDB } from '../database'
+import { query, execute } from '../database'
 
 export interface TrackRecord {
   id: string
@@ -21,40 +21,36 @@ function rowToObject<T>(columns: string[], values: unknown[]): T {
 
 export const ScoreRepository = {
   getAll(instrument?: string): TrackRecord[] {
-    const db = getDB()
     const sql = instrument
       ? 'SELECT * FROM tracks WHERE instrument = ? ORDER BY difficulty_score ASC'
       : 'SELECT * FROM tracks ORDER BY instrument, difficulty_score ASC'
-    const result = db.exec(sql, instrument ? [instrument] : [])
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<TrackRecord>(result[0].columns, v))
+    const result = query(sql, instrument ? [instrument] : [])
+    if (!result) return []
+    return result.values.map((v) => rowToObject<TrackRecord>(result.columns, v))
   },
 
   getById(id: string): TrackRecord | null {
-    const db = getDB()
-    const result = db.exec('SELECT * FROM tracks WHERE id = ?', [id])
-    if (!result.length || !result[0].values.length) return null
-    return rowToObject<TrackRecord>(result[0].columns, result[0].values[0])
+    const result = query('SELECT * FROM tracks WHERE id = ?', [id])
+    if (!result || !result.values.length) return null
+    return rowToObject<TrackRecord>(result.columns, result.values[0])
   },
 
   upsert(track: Omit<TrackRecord, 'created_at'>): void {
-    const db = getDB()
-    db.run(
+    execute(
       `INSERT OR REPLACE INTO tracks (id, name, composer, instrument, difficulty, difficulty_score, duration_seconds, category, musicxml_path, midi_path, is_builtin)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [track.id, track.name, track.composer, track.instrument, track.difficulty, track.difficulty_score, track.duration_seconds, track.category, track.musicxml_path, track.midi_path, track.is_builtin],
     )
   },
 
-  search(query: string, instrument?: string): TrackRecord[] {
-    const db = getDB()
-    const pattern = `%${query}%`
+  search(q: string, instrument?: string): TrackRecord[] {
+    const pattern = `%${q}%`
     const sql = instrument
       ? "SELECT * FROM tracks WHERE instrument = ? AND (name LIKE ? OR composer LIKE ?) ORDER BY difficulty_score ASC"
       : "SELECT * FROM tracks WHERE (name LIKE ? OR composer LIKE ?) ORDER BY difficulty_score ASC"
     const params = instrument ? [instrument, pattern, pattern] : [pattern, pattern]
-    const result = db.exec(sql, params)
-    if (!result.length) return []
-    return result[0].values.map((v) => rowToObject<TrackRecord>(result[0].columns, v))
+    const result = query(sql, params)
+    if (!result) return []
+    return result.values.map((v) => rowToObject<TrackRecord>(result.columns, v))
   },
 }

@@ -1,4 +1,4 @@
-import { getDB } from '@/db/database'
+import { execute } from '@/db/database'
 import { ScoreParser } from '@/engines/ScoreParser'
 import { DifficultyCalculator } from '@/engines/DifficultyCalculator'
 
@@ -38,8 +38,7 @@ export async function uploadUserScore(file: File): Promise<string> {
   })
 
   // Insert track metadata into SQLite
-  const db = await getDB()
-  db.run(
+  execute(
     `INSERT INTO tracks (id, name, composer, instrument, difficulty, difficulty_score, duration_seconds, musicxml_path, is_builtin)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
     [id, parsed.title, parsed.composer, 'piano', difficulty.level, difficulty.score, 0, storageKey],
@@ -67,6 +66,5 @@ export async function deleteUserScore(id: string, storageKey: string): Promise<v
     tx.onerror = () => reject(tx.error)
   })
 
-  const db = await getDB()
-  db.run('DELETE FROM tracks WHERE id = ?', [id])
+  execute('DELETE FROM tracks WHERE id = ?', [id])
 }
